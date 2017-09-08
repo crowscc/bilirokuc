@@ -14,10 +14,10 @@ namespace BiliRoku
     /// </summary>
     public partial class MainWindow
     {
-        private Config _config;
+        private LocalRoom _localRoom;
         private List<Downloader> _downloaderList;
         private List<RoomInfo> _roomInfoList;
-
+        private Config _config;
         public MainWindow()
         {
             InitializeComponent();
@@ -47,6 +47,7 @@ namespace BiliRoku
                     }
                 }
             }
+            SetProcessingBtn();
         }
 
         public void SetProcessingBtn()
@@ -54,7 +55,7 @@ namespace BiliRoku
             startButton.IsEnabled = false;
             startButton.Content = "处理中...";
         }
-        public void SetStopBtn()
+        public void SetStartBtn()
         {
             Dispatcher.Invoke(() =>
             {
@@ -66,23 +67,11 @@ namespace BiliRoku
                 startButton.Content = "开始";
             });
         }
-        public void SetStartBtn()
-        {
-            Dispatcher.Invoke(() =>
-            {
-                startButton.IsEnabled = true;
-                roomIdBox.IsEnabled = false;
-                saveCommentCheckBox.IsEnabled = false;
-                waitForStreamCheckBox.IsEnabled = false;
-                openSavepathConfigDialogButton.IsEnabled = false;
-                startButton.Content = "停止";
-            });
-        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _config = Config.GetConfig();
-            _roomInfoList = _config.GetInfoList();
+            _localRoom = LocalRoom.GetLocalRoom();
+            _roomInfoList = _localRoom.GetInfoList();
             refreshData();
 
             Downloader tempDown;
@@ -96,6 +85,10 @@ namespace BiliRoku
                     _downloaderList.Add(tempDown);
                 }
             }
+
+            _config = Config.GetConfig();
+            var saveLoaction = _config.SaveLoaction;
+            savepathBox.Text = saveLoaction == null ? "" : saveLoaction;
 
             AppendLogln("INFO", "启动成功。");
         }
@@ -190,9 +183,16 @@ namespace BiliRoku
             info.IsDownloadCmt = isCmt.ToString();
             info.IsWaitStreaming = isWait.ToString();
             info.Remark = remark;
-            _config.AddRoomInfo(info);
-            startNewThread(info);
-            refreshData();
+            if (_localRoom.AddRoomInfo(info)) 
+            {
+                startNewThread(info);
+                refreshData();
+                _config.SaveLoaction = savepathBox.Text;
+            }
+            else
+            {
+                MessageBox.Show("添加失败");
+            }
         }
 
         // 结束按钮事件
@@ -202,7 +202,8 @@ namespace BiliRoku
             {
                 tempDown.Stop();
             }
-            _config.SaveRoomInfo();
+            _localRoom.SaveRoomInfo();
+            SetStartBtn();
         }
 
         // 在线程list中添加新的线程
@@ -316,7 +317,7 @@ namespace BiliRoku
                     _roomInfoList[index].RunSetting = true;
                 }
             }
-            _config.SaveRoomInfo();
+            _localRoom.SaveRoomInfo();
             refreshData();
         }
 

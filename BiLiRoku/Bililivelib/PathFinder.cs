@@ -12,6 +12,7 @@ namespace BiliRoku.Bililivelib
     internal class PathFinder
     {
         private readonly MainWindow _mw;
+        private string _remark = "";
         public PathFinder(MainWindow mw)
         {
             _mw = mw;
@@ -22,10 +23,12 @@ namespace BiliRoku.Bililivelib
             _mw.AppendLogln(level, info);
         }
 
-        public Task<string> GetRoomid(string originalRoomId)
+        public Task<string> GetRoomid(string originalRoomId, string remark)
         {
-            return Task.Run(() => {
-                AddInfo("INFO", "尝试获取真实房间号");
+            _remark = remark;
+            return Task.Run(() =>
+            {
+                AddInfo("INFO", _remark + ":尝试获取真实房间号");
 
                 var roomWebPageUrl = "http://live.bilibili.com/" + originalRoomId;
                 var wc = new WebClient();
@@ -42,7 +45,7 @@ namespace BiliRoku.Bililivelib
                 }
                 catch (Exception e)
                 {
-                    AddInfo("ERROR", "打开直播页面失败：" + e.Message);
+                    AddInfo("ERROR", _remark + ":打开直播页面失败：" + e.Message);
                     return null;
                 }
 
@@ -51,21 +54,22 @@ namespace BiliRoku.Bililivelib
                 var colls = Regex.Matches(roomHtml, pattern);
                 foreach (Match mat in colls)
                 {
-                    AddInfo("INFO", "真实房间号: " + mat.Value);
+                    AddInfo("INFO", _remark + ":真实房间号: " + mat.Value);
                     return mat.Value;
                 }
 
-                AddInfo("ERROR", "获取真实房间号失败");
+                AddInfo("ERROR", _remark + ":获取真实房间号失败");
                 return null;
             });
         }
 
         internal Task<string> GetTrueUrl(string roomid)
         {
-            return Task.Run(()=> {
+            return Task.Run(() =>
+            {
                 if (roomid == null)
                 {
-                    AddInfo("ERROR", "房间号获取错误。");
+                    AddInfo("ERROR", _remark + ":房间号获取错误。");
                     throw new Exception("No roomid");
                 }
                 var apiUrl = GetApiUrl(roomid);
@@ -86,7 +90,7 @@ namespace BiliRoku.Bililivelib
                 }
                 catch (Exception e)
                 {
-                    AddInfo("ERROR", "发送解析请求失败：" + e.Message);
+                    AddInfo("ERROR", _remark + ":发送解析请求失败：" + e.Message);
                     throw;
                 }
 
@@ -98,7 +102,7 @@ namespace BiliRoku.Bililivelib
                 }
                 catch (Exception e)
                 {
-                    AddInfo("ERROR", "解析XML失败：" + e.Message);
+                    AddInfo("ERROR", _remark + ":解析XML失败：" + e.Message);
                     throw;
                 }
 
@@ -106,14 +110,14 @@ namespace BiliRoku.Bililivelib
                 var result = playUrlXml.DocumentElement?.SelectSingleNode("/video/result");
                 if (result != null && result.InnerText != "suee")
                 {
-                    AddInfo("ERROR", "解析地址失败。");
+                    AddInfo("ERROR", _remark + ":解析地址失败。");
                     throw new Exception("No Avaliable download url in xml infomation.");
                 }
                 var turlNode = playUrlXml.DocumentElement?.SelectSingleNode("/video/durl/url");
                 if (turlNode == null) throw new NullReferenceException();
                 var trueUrl = turlNode.InnerText;
 
-                AddInfo("INFO", "地址解析成功：" + trueUrl);
+                AddInfo("INFO", _remark + ":地址解析成功：" + trueUrl);
                 return trueUrl;
             });
         }

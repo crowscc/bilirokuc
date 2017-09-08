@@ -32,7 +32,6 @@ namespace BiliRoku.Bililivelib
         {
             try
             {
-                _mw.SetProcessingBtn();
                 if (IsRunning)
                 {
                     _mw.AppendLogln("ERROR,", _roomInfo.Remark + ":已经是运行状态了。");
@@ -51,10 +50,9 @@ namespace BiliRoku.Bililivelib
                 //准备查找下载地址
                 var pathFinder = new PathFinder(_mw);
                 //查找真实房间号
-                _roomid = await pathFinder.GetRoomid(originalRoomId);
+                _roomid = await pathFinder.GetRoomid(originalRoomId, RoomInfo.Remark);
                 if (_roomid != null)
                 {
-                    _mw.SetStartBtn();
                 }
                 else
                 {
@@ -75,7 +73,8 @@ namespace BiliRoku.Bililivelib
                 }
 
                 var cmtProvider = ReceiveComment();
-                _flvDownloader = new FlvDownloader(_roomid, savepath, RoomInfo.Remark, _downloadCommentOption, cmtProvider); _flvDownloader.Info += _flvDownloader_Info;
+                _flvDownloader = new FlvDownloader(_roomid, savepath, RoomInfo.Remark, _downloadCommentOption, cmtProvider);
+                _flvDownloader.Info += _flvDownloader_Info;
                 CheckStreaming();
                 try
                 {
@@ -179,7 +178,6 @@ namespace BiliRoku.Bililivelib
                 RoomInfo.Status = "";
                 _mw.refreshData();
             }
-            _mw.SetStopBtn();
         }
 
         private CommentProvider ReceiveComment()
@@ -208,9 +206,9 @@ namespace BiliRoku.Bililivelib
                 {
                     if (e.Comment.MsgType != MsgTypeEnum.LiveEnd) return;
                     _mw.AppendLogln("INFO,", _roomInfo.Remark + ":[主播结束直播]");
-                    RoomInfo.IsRun = false;
-                    RoomInfo.Status = "";
-                    _flvDownloader?.Stop(); if (!_autoStart)
+                    RoomInfo.Status = "未直播";
+                    _flvDownloader?.Stop();
+                    if (!_autoStart)
                     {
                         Stop();
                     }

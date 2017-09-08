@@ -28,7 +28,7 @@
             <CheckBox x:Name="saveCommentCheckBox" Content="同时保存弹幕" Height="20" Margin="0,0,-0.286,0" VerticalContentAlignment="Center" IsChecked="True"/>
             <CheckBox x:Name="waitForStreamCheckBox" Content="等待主播推流后自动开始" Height="20" Margin="0,0,-0.286,0" VerticalContentAlignment="Center" IsChecked="True"/>
         </StackPanel>
-        <Button x:Name="startButton" Content="开始" Margin="10,0,0,40.8" VerticalAlignment="Bottom" Width="162" Height="79" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="36" Click="startButton_Click"/>
+        <Button x:Name="startButton" Content="开始" Focusable="False" Margin="10,0,0,40.8" VerticalAlignment="Bottom" Width="162" Height="79" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="36" Click="startButton_Click"/>
         <Button x:Name="endButton" Content="结束" Focusable="False" Margin="177,0,0,40.6" VerticalAlignment="Bottom" Width="162" Height="79" HorizontalAlignment="Left" HorizontalContentAlignment="Center" FontSize="36" Click="endButton_Click" RenderTransformOrigin="1.377,0.489" Grid.ColumnSpan="2"/>
         <Label x:Name="aboutLinkLabel" Content="关于 BiliRoku" HorizontalAlignment="Left" Margin="10,0,0,5.8" Height="25" VerticalAlignment="Bottom" Cursor="Hand" MouseLeftButtonUp="aboutLinkLabel_MouseLeftButtonUp" Width="85">
             <Label.Foreground>
@@ -63,8 +63,8 @@
                 <DataGridTextColumn Header="房间ID" Width="auto" Binding="{Binding Path=RoomId}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="备注" Width="auto" Binding="{Binding Path=Remark}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="直播状态" Width="auto" Binding="{Binding Path=Status}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="是否正在录播" Width="auto" Binding="{Binding Path=IsRun}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="是否永久停止" Width="auto" Binding="{Binding Path=RunSetting}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="正在录播" Width="auto" Binding="{Binding Path=IsRun}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="开启录播" Width="auto" Binding="{Binding Path=RunSetting}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="存储路径" Width="auto" Binding="{Binding Path=SaveLocation}" IsReadOnly="True"/>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>

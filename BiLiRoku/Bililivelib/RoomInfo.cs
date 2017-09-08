@@ -12,7 +12,7 @@ namespace BiliRoku.Bililivelib
         private string _roomId;
         private string _remark; //备注
         private string _status; //状态
-        private bool _isRun; //是否停止
+        private bool _isRun; //是否正在录播
         private string _saveLocation;   //这个是地址
         private string _savePath;
         private string _filename;

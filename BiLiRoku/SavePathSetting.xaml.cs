@@ -10,6 +10,7 @@ namespace BiliRoku
     public partial class SavePathSetting
     {
         private SaveFileDialog _sfd;
+        private Config _config;
 
         public SavePathSetting()
         {
@@ -18,12 +19,15 @@ namespace BiliRoku
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            _sfd = new SaveFileDialog {FileName = "savefile.flv"};
+            _sfd = new SaveFileDialog { FileName = "savefile.flv" };
+            _config = Config.GetConfig();
+            SaveDirBox.Text = _config.SavePath == null ? "" : _config.SavePath;
+            FilenameBox.Text = _config.FileName == null ? FilenameBox.Text : _config.FileName;
         }
 
         private void OpenSaveDialogButton_Click(object sender, RoutedEventArgs e)
         {
-            if(_sfd.ShowDialog() == true)
+            if (_sfd.ShowDialog() == true)
             {
                 SaveDirBox.Text = System.IO.Path.GetDirectoryName(_sfd.FileName);
             }
@@ -60,6 +64,8 @@ namespace BiliRoku
                 }
             }
             DialogResult = true;
+            _config.SavePath = SaveDirBox.Text;
+            _config.FileName = FilenameBox.Text;
             Close();
         }
 
